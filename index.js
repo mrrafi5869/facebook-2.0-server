@@ -15,6 +15,8 @@ async function run(){
         const usersCollection = client.db('users').collection("usersAccount");
         const storiesCollection = client.db('users').collection("stories");
         const postCollection = client.db('users').collection("posts");
+        const allStatusCollection = client.db('users').collection("status");
+        const commentsCollection = client.db('users').collection("comments");
         
         // get
         app.get("/users", async(req, res) => {
@@ -32,6 +34,23 @@ async function run(){
             const option = await postCollection.find(query).toArray();
             res.send(option);
         });
+        app.get("/allStatus", async(req, res) => {
+            const query = {};
+            const option = await allStatusCollection.find(query).toArray();
+            res.send(option);
+        });
+        app.get("/user", async(req, res) => {
+            const email = req.query.email;
+            const query = {email:email};
+            const option = await usersCollection.findOne(query);
+            res.send(option);
+        });
+        app.get("/comments/:id", async(req, res) => {
+            const id = req.params.id;
+            const query = {postId: id};
+            const option = await commentsCollection.find(query);
+            res.send(option);
+        });
 
         // post
         app.post("/user", async(req, res) => {
@@ -47,6 +66,16 @@ async function run(){
         app.post("/post", async(req, res) => {
             const data = req.body;
             const option = await postCollection.insertOne(data);
+            res.send(option);
+        });
+        app.post("/status", async(req, res) => {
+            const data = req.body;
+            const option = await allStatusCollection.insertOne(data);
+            res.send(option);
+        });
+        app.post("/comment", async(req, res) => {
+            const data = req.body;
+            const option = await commentsCollection.insertOne(data);
             res.send(option);
         });
     }
